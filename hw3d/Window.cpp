@@ -97,7 +97,7 @@ std::string Window::Exception::GetErrorString() const noexcept
 }
 
 // Window stuff
-Window::Window(int width, int height, const char* name) noexcept
+Window::Window(int width, int height, const char* name)
 {
 	// calculate window size based on desired client region size
 	RECT wr;
@@ -105,7 +105,14 @@ Window::Window(int width, int height, const char* name) noexcept
 	wr.right = wr.left + width;
 	wr.top = 100;
 	wr.bottom = wr.top + height;
-	AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+	if (FAILED(AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE)))
+	{
+		throw SCALDWND_LAST_EXCEPT();
+	}
+
+	//throw SCALDWND_EXCEPT(ERROR_ARENA_TRASHED);
+	//throw std::runtime_error{"my butt hurts"};
+	//throw 6969;
 
 	// create window & get hWnd
 	hWnd = CreateWindowA(
@@ -115,7 +122,11 @@ Window::Window(int width, int height, const char* name) noexcept
 		CW_USEDEFAULT, CW_USEDEFAULT, wr.right - wr.left, wr.bottom - wr.top,
 		nullptr, nullptr, WindowClass::GetInstance(), this
 	);
-
+	// check for error
+	if (hWnd == nullptr)
+	{
+		throw SCALDWND_LAST_EXCEPT();
+	}
 	windowCount++;
 	// show the damn window
 	ShowWindow(hWnd, SW_SHOW);
