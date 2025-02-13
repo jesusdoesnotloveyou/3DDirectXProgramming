@@ -11,7 +11,7 @@ int CALLBACK WinMain(
 {
 	try {
 		Window wnd(800, 300, "window1");
-		Window wnd2(300, 800, "window2");
+		Window wnd2(300, 600, "window2");
 	
 		MSG msg;
 		BOOL gResult;
@@ -19,6 +19,10 @@ int CALLBACK WinMain(
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+			if (wnd.kbd.IsKeyPressed(VK_SPACE))
+			{
+				MessageBoxA(nullptr, "Smth happen!", "Space Key Was Pressed", MB_OK | MB_ICONEXCLAMATION);
+			}
 		}
 
 		if (gResult == -1)
