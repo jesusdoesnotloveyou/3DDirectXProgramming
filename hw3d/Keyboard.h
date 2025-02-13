@@ -25,14 +25,28 @@ public:
 			:
 			type(Type::Invalid),
 			code(0u)
-		{
-		}
+		{}
 
 		Event(Type type, unsigned char code) noexcept
 			:
 			type(type),
 			code(code)
+		{}
+		bool IsPress() const noexcept
 		{
+			return type == Type::Press;
+		}
+		bool IsRelease() const noexcept
+		{
+			return type == Type::Release;
+		}
+		bool IsValid() const noexcept
+		{
+			return type != Type::Invalid;
+		}
+		unsigned char GetCode() const noexcept
+		{
+			return code;
 		}
 	};
 
@@ -53,7 +67,7 @@ public:
 	// autorepeat control
 	void EnableAutorepeat() noexcept;
 	void DisableAutorepeat() noexcept;
-	void IsAutorepeatEnabled() const noexcept;
+	bool IsAutorepeatEnabled() const noexcept;
 private:
 	// stuff used by window
 	void OnKeyPressed(unsigned char keyCode) noexcept;
@@ -64,7 +78,10 @@ private:
 	template<typename T>
 	static void TrimBuffer(std::queue<T>& buffer) noexcept
 	{
-
+		while (buffer.size() > bufferSize)
+		{
+			buffer.pop();
+		}
 	}
 
 private:
@@ -73,6 +90,6 @@ private:
 
 	bool autorepeatEnabled = false;
 	std::bitset<nKeys> keyStates;
-	std::queue<Event> eventBuffer;
+	std::queue<Event> keyBuffer;
 	std::queue<char> charBuffer;
 };
