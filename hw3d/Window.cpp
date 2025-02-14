@@ -105,7 +105,7 @@ Window::Window(int width, int height, const char* name)
 	wr.right = wr.left + width;
 	wr.top = 100;
 	wr.bottom = wr.top + height;
-	if (FAILED(AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE)))
+	if (AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
 	{
 		throw SCALDWND_LAST_EXCEPT();
 	}
@@ -136,6 +136,14 @@ Window::~Window()
 {
 	DestroyWindow(hWnd);
 	windowCount--;
+}
+
+void Window::SetTitle(const std::string& title)
+{
+	if (SetWindowText(hWnd, title.c_str()) == 0)
+	{
+		throw SCALDWND_LAST_EXCEPT();
+	}
 }
 
 LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -178,15 +186,66 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		break;
 	/****************** KEYBOARD MESSAGES *******************/
 	case WM_KEYDOWN:
-		kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+	// syskey commands need to be handled to track ALT key (VK_MENU)
+	case WM_SYSKEYDOWN:
+		if (!(lParam & 0x40000000) || kbd.IsAutorepeatEnabled()) // filter autorepeat key event
+		{
+			kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+		}
 		break;
 	case WM_KEYUP:
+	case WM_SYSKEYUP:
 		kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
 		break;
 	case WM_CHAR:
 		kbd.OnChar(static_cast<unsigned char>(wParam));
 		break;
-	}
 	/****************** END KEYBOARD MESSAGES *******************/
+
+	/****************** MOUSE MESSAGES *******************/
+	case WM_MOUSEMOVE:
+	{
+		POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnMouseMove(pt.x, pt.y);
+		break;
+	}
+	case WM_LBUTTONDOWN:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnLeftPressed(pt.x, pt.y);
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnLeftReleased(pt.x, pt.y);
+		break;
+	}
+	case WM_RBUTTONDOWN:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnRightPressed(pt.x, pt.y);
+		break;
+	}
+	case WM_RBUTTONUP:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		mouse.OnRightReleased(pt.x, pt.y);
+		break;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		const POINTS pt = MAKEPOINTS(lParam);
+		if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
+		{
+			mouse.OnWheelUp(pt.x, pt.y);
+		}
+		else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0)
+		{
+			mouse.OnWheelDown(pt.x, pt.y);
+		}
+	}
+	}
+	/****************** END MOUSE MESSAGES *******************/
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
