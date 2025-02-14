@@ -32,8 +32,8 @@ int CALLBACK WinMain(
 				if (e.GetType() == Mouse::Event::Type::Move)
 				{
 					std::ostringstream oss;
-					oss << "Mouse Position: (" << e.GetX() << "," << e.GetY() << ")";
-					wnd.SetWindowTitle(oss.str());
+					oss << "Mouse Position: (" << e.GetPosX() << "," << e.GetPosY() << ")";
+					wnd.SetTitle(oss.str());
 				}
 			}
 

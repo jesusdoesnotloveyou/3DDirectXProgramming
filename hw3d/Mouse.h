@@ -44,34 +44,13 @@ public:
 			x(parent.x),
 			y(parent.y)
 		{}
-		bool IsValid() const noexcept
-		{
-			return type != Type::Invalid;
-		}
-		Type GetType() const noexcept
-		{
-			return type;
-		}
-		std::pair<int, int> GetPos() const noexcept
-		{
-			return std::pair{ x, y };
-		}
-		int GetX() const noexcept
-		{
-			return x;
-		}
-		int GetY() const noexcept
-		{
-			return y;
-		}
-		bool IsLeftPressed() const noexcept
-		{
-			return bIsLeftPressed;
-		}
-		bool IsRightPressed() const noexcept
-		{
-			return bIsRightPressed;
-		}
+		bool IsValid() const noexcept { return type != Type::Invalid; }
+		Type GetType() const noexcept { return type; }
+		std::pair<int, int> GetPos() const noexcept { return std::pair{ x, y }; }
+		int GetPosX() const noexcept { return x; }
+		int GetPosY() const noexcept { return y; }
+		bool IsLeftPressed() const noexcept { return bIsLeftPressed; }
+		bool IsRightPressed() const noexcept { return bIsRightPressed; }
 	};
 
 public:
