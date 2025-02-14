@@ -27,16 +27,13 @@ bool Mouse::IsRightPressed() const noexcept
 
 Mouse::Event Mouse::Read() noexcept
 {
-    if (bufferSize > 0u)
+    if (mouseBuffer.size() > 0u)
     {
         Mouse::Event e = mouseBuffer.front();
         mouseBuffer.pop();
         return e;
     }
-    else
-    {
-        return Mouse::Event{};
-    }
+    return Mouse::Event{};
 }
 
 void Mouse::Flush() noexcept

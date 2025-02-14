@@ -138,11 +138,11 @@ Window::~Window()
 	windowCount--;
 }
 
-void Window::SetWindowTitle(const std::string& title)
+void Window::SetTitle(const std::string& title)
 {
-	if (SetWindowTextA(hWnd, title.c_str()) == 0)
+	if (SetWindowText(hWnd, title.c_str()) == 0)
 	{
-		SCALDWND_LAST_EXCEPT();
+		throw SCALDWND_LAST_EXCEPT();
 	}
 }
 
@@ -203,7 +203,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	/****************** END KEYBOARD MESSAGES *******************/
 
 	/****************** MOUSE MESSAGES *******************/
-	case WM_MOVE:
+	case WM_MOUSEMOVE:
 	{
 		POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnMouseMove(pt.x, pt.y);
