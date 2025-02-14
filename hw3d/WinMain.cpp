@@ -1,7 +1,7 @@
 
 #include "Window.h"
 //#include "WindowsMessageMap.h"
-//#include <sstream>
+#include <sstream>
 
 int CALLBACK WinMain(
 	HINSTANCE hInstance,
@@ -19,10 +19,24 @@ int CALLBACK WinMain(
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-			if (wnd.kbd.IsKeyPressed(VK_SPACE))
+			
+			// Keyboard test
+			/*if (wnd.kbd.IsKeyPressed(VK_SPACE))
 			{
 				MessageBoxA(nullptr, "Smth happen!", "Space Key Was Pressed", MB_OK | MB_ICONEXCLAMATION);
+			}*/
+			
+			while (!wnd.mouse.IsEmpty())
+			{
+				const auto e = wnd.mouse.Read();
+				if (e.GetType() == Mouse::Event::Type::Move)
+				{
+					std::ostringstream oss;
+					oss << "Mouse Position: (" << e.GetX() << "," << e.GetY() << ")";
+					wnd.SetWindowTitle(oss.str());
+				}
 			}
+
 		}
 
 		if (gResult == -1)
