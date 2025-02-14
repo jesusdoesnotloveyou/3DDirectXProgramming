@@ -105,7 +105,7 @@ Window::Window(int width, int height, const char* name)
 	wr.right = wr.left + width;
 	wr.top = 100;
 	wr.bottom = wr.top + height;
-	if (FAILED(AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE)))
+	if (AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
 	{
 		throw SCALDWND_LAST_EXCEPT();
 	}
@@ -136,6 +136,14 @@ Window::~Window()
 {
 	DestroyWindow(hWnd);
 	windowCount--;
+}
+
+void Window::SetWindowTitle(const std::string& title)
+{
+	if (SetWindowTextA(hWnd, title.c_str()) == 0)
+	{
+		SCALDWND_LAST_EXCEPT();
+	}
 }
 
 LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -196,25 +204,36 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 
 	/****************** MOUSE MESSAGES *******************/
 	case WM_MOVE:
+	{
 		POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnMouseMove(pt.x, pt.y);
+	}
 	case WM_LBUTTONDOWN:
+	{
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnLeftPressed(pt.x, pt.y);
 		break;
+	}
 	case WM_LBUTTONUP:
+	{
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnLeftReleased(pt.x, pt.y);
 		break;
+	}
 	case WM_RBUTTONDOWN:
+	{
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnRightPressed(pt.x, pt.y);
 		break;
+	}
 	case WM_RBUTTONUP:
+	{
 		const POINTS pt = MAKEPOINTS(lParam);
 		mouse.OnRightReleased(pt.x, pt.y);
 		break;
+	}
 	case WM_MOUSEWHEEL:
+	{
 		const POINTS pt = MAKEPOINTS(lParam);
 		if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
 		{
@@ -224,6 +243,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		{
 			mouse.OnWheelDown(pt.x, pt.y);
 		}
+	}
 	}
 	/****************** END MOUSE MESSAGES *******************/
 	return DefWindowProc(hWnd, msg, wParam, lParam);
