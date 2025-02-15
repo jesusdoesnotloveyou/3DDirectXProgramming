@@ -62,6 +62,7 @@ public:
 	int GetPosX() const noexcept;
 	int GetPosY() const noexcept;
 	bool IsInWindow() const noexcept;
+	int  GetWheelDelta() const noexcept { return wheelDeltaCarry; }
 	bool IsLeftPressed() const noexcept;
 	bool IsRightPressed() const noexcept;
 	Mouse::Event Read() noexcept;
@@ -82,7 +83,7 @@ private:
 	void OnWheelUp(int x, int y) noexcept;
 	void OnWheelDown(int x, int y) noexcept;
 	void TrimBuffer() noexcept;
-
+	void OnWheelDelta(int x, int y, int delta) noexcept;
 private:
 	static constexpr unsigned int bufferSize = 16u;
 	int x;
@@ -90,5 +91,6 @@ private:
 	bool bIsLeftPressed = false;
 	bool bIsRightPressed = false;
 	bool bIsInWindow = false;
+	int wheelDeltaCarry = 0;
 	std::queue<Event> mouseBuffer;
 };

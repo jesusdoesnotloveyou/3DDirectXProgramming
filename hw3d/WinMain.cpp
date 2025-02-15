@@ -43,6 +43,21 @@ int CALLBACK WinMain(
 					wnd.SetTitle("Left window region!");
 					break;
 				}
+				// problem
+				case Mouse::Event::Type::WheelUp:
+				{
+					std::ostringstream oss;
+					oss << "Wheel Up: " << wnd.mouse.GetWheelDelta();
+					wnd.SetTitle(oss.str());
+					break;
+				}
+				case Mouse::Event::Type::WheelDown:
+				{
+					std::ostringstream oss;
+					oss << "Wheel Down: " << wnd.mouse.GetWheelDelta();
+					wnd.SetTitle(oss.str());
+					break;
+				}
 				}
 			}
 
