@@ -98,6 +98,9 @@ std::string Window::Exception::GetErrorString() const noexcept
 
 // Window stuff
 Window::Window(int width, int height, const char* name)
+	:
+	width(width),
+	height(height)
 {
 	// calculate window size based on desired client region size
 	RECT wr;
@@ -205,8 +208,31 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	/****************** MOUSE MESSAGES *******************/
 	case WM_MOUSEMOVE:
 	{
-		POINTS pt = MAKEPOINTS(lParam);
-		mouse.OnMouseMove(pt.x, pt.y);
+		const POINTS pt = MAKEPOINTS(lParam);
+		// in client region -> log move, log enter + capture mouse
+		if (pt.x > 0 && pt.x < width && pt.y > 0 && pt.y < height)
+		{
+			mouse.OnMouseMove(pt.x, pt.y);
+			if (!mouse.IsInWindow())
+			{
+				SetCapture(hWnd);
+				mouse.OnMouseEnter();
+			}
+		}
+		// not in client region -> log move / maintain capture if button down
+		else
+		{
+			if (wParam & (MK_LBUTTON | MK_RBUTTON))
+			{
+				mouse.OnMouseMove(pt.x, pt.y);
+
+			}
+			// button up -> release capture / log event for leaving
+			else {
+				ReleaseCapture();
+				mouse.OnMouseLeave();
+			}
+		}
 		break;
 	}
 	case WM_LBUTTONDOWN:
