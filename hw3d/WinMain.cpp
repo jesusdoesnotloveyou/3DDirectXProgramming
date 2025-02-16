@@ -26,6 +26,7 @@ int CALLBACK WinMain(
 				MessageBoxA(nullptr, "Smth happen!", "Space Key Was Pressed", MB_OK | MB_ICONEXCLAMATION);
 			}*/
 			
+			static int i = 0;
 			while (!wnd.mouse.IsEmpty())
 			{
 				const auto e = wnd.mouse.Read();
@@ -45,22 +46,23 @@ int CALLBACK WinMain(
 				}
 				// problem
 				case Mouse::Event::Type::WheelUp:
-				{
-					std::ostringstream oss;
-					oss << "Wheel Up: " << wnd.mouse.GetWheelDelta();
-					wnd.SetTitle(oss.str());
+					i++;
+					{
+						std::ostringstream oss;
+						oss << "Wheel Up: " << i;
+						wnd.SetTitle(oss.str());
+					}
 					break;
-				}
 				case Mouse::Event::Type::WheelDown:
-				{
-					std::ostringstream oss;
-					oss << "Wheel Down: " << wnd.mouse.GetWheelDelta();
-					wnd.SetTitle(oss.str());
+					i--;
+					{
+						std::ostringstream oss;
+						oss << "Wheel Down: " << i;
+						wnd.SetTitle(oss.str());
+					}
 					break;
-				}
 				}
 			}
-
 		}
 
 		if (gResult == -1)
