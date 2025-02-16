@@ -1,16 +1,68 @@
 #include "App.h"
+#include <sstream>
 
 App::App()
     :
-    wnd(800, 600, "window1")
+    wnd(640, 480, "window1")
 {}
 
 int App::Go()
 {
-    return 0;
+	MSG msg;
+	BOOL gResult;
+	while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0)
+	{
+		// TranslateMessage  will post auxilliary WM_CHAR messages from key msgs
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+
+		DoFrame();
+	}
+	// check if GetMessage call itself borked
+	if (gResult == -1)
+	{
+		throw SCALDWND_LAST_EXCEPT();
+	}
+	// wParam here is the value passed to PostQuitMessage
+	return msg.wParam;
 }
 
 void App::DoFrame()
 {
-
+	static int i = 0;
+	while (!wnd.mouse.IsEmpty())
+	{
+		const auto e = wnd.mouse.Read();
+		switch (e.GetType())
+		{
+		case Mouse::Event::Type::Move:
+		{
+			std::ostringstream oss;
+			oss << "Mouse Position: (" << e.GetPosX() << "," << e.GetPosY() << ")";
+			wnd.SetTitle(oss.str());
+			break;
+		}
+		case Mouse::Event::Type::Leave:
+		{
+			wnd.SetTitle("Left window region!");
+			break;
+		}
+		case Mouse::Event::Type::WheelUp:
+			i++;
+			{
+				std::ostringstream oss;
+				oss << "Wheel Up: " << i;
+				wnd.SetTitle(oss.str());
+			}
+			break;
+		case Mouse::Event::Type::WheelDown:
+			i--;
+			{
+				std::ostringstream oss;
+				oss << "Wheel Down: " << i;
+				wnd.SetTitle(oss.str());
+			}
+			break;
+		}
+	}
 }
