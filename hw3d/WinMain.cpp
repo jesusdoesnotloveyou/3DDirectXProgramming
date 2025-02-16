@@ -1,7 +1,6 @@
 
-#include "Window.h"
-//#include "WindowsMessageMap.h"
-#include <sstream>
+#include "App.h"
+//#include "WindowsMessageMap.h
 
 int CALLBACK WinMain(
 	HINSTANCE hInstance,
@@ -10,64 +9,7 @@ int CALLBACK WinMain(
 	int nCmdShow)
 {
 	try {
-		Window wnd(800, 300, "window1");
-		// Window wnd2(300, 600, "window2");
-	
-		MSG msg;
-		BOOL gResult;
-		while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0)
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-			
-			// Keyboard test
-			/*if (wnd.kbd.IsKeyPressed(VK_SPACE))
-			{
-				MessageBoxA(nullptr, "Smth happen!", "Space Key Was Pressed", MB_OK | MB_ICONEXCLAMATION);
-			}*/
-			
-			while (!wnd.mouse.IsEmpty())
-			{
-				const auto e = wnd.mouse.Read();
-				switch(e.GetType())
-				{
-				case Mouse::Event::Type::Move:
-				{
-					std::ostringstream oss;
-					oss << "Mouse Position: (" << e.GetPosX() << "," << e.GetPosY() << ")";
-					wnd.SetTitle(oss.str());
-					break;
-				}
-				case Mouse::Event::Type::Leave:
-				{
-					wnd.SetTitle("Left window region!");
-					break;
-				}
-				// problem
-				case Mouse::Event::Type::WheelUp:
-				{
-					std::ostringstream oss;
-					oss << "Wheel Up: " << wnd.mouse.GetWheelDelta();
-					wnd.SetTitle(oss.str());
-					break;
-				}
-				case Mouse::Event::Type::WheelDown:
-				{
-					std::ostringstream oss;
-					oss << "Wheel Down: " << wnd.mouse.GetWheelDelta();
-					wnd.SetTitle(oss.str());
-					break;
-				}
-				}
-			}
-
-		}
-
-		if (gResult == -1)
-		{
-			return -1;
-		}
-		return msg.wParam;
+		return App{}.Go();
 	}
 	catch (const ScaldException& e)
 	{
