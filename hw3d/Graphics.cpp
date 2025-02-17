@@ -43,6 +43,11 @@ Graphics::Graphics(HWND hWnd)
 		&pContext
 	);
 
+	// gain access to texture subresource in swap chain (back buffer)
+	ID3D11Resource* pBackBuffer = nullptr;
+	pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<void**>(&pBackBuffer));
+	pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &pRtv);
+	if (pBackBuffer) pBackBuffer->Release();
 }
 
 Graphics::~Graphics()
@@ -50,4 +55,16 @@ Graphics::~Graphics()
 	if (pContext) pContext->Release();
 	if (pSwapChain) pSwapChain->Release();
 	if (pDevice) pDevice->Release();
+	if (pRtv) pRtv->Release();
+}
+
+void Graphics::EndFrame()
+{
+	pSwapChain->Present(1u, 0u);
+}
+
+void Graphics::ClearBuffer(float red, float green, float blue) noexcept
+{
+	const float color[] = { red, green, blue, 1.0f };
+	pContext->ClearRenderTargetView(pRtv, color);
 }

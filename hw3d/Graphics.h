@@ -11,8 +11,12 @@ public:
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 
+	void EndFrame();
+	void ClearBuffer(float red, float green, float blue) noexcept;
+
 private:
 	ID3D11Device* pDevice = nullptr;
 	IDXGISwapChain* pSwapChain = nullptr;
 	ID3D11DeviceContext* pContext = nullptr;
+	ID3D11RenderTargetView* pRtv = nullptr;
 };
