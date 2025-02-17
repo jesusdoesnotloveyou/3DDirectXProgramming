@@ -10,6 +10,7 @@ class Graphics
 {
 public:
 	Graphics(HWND hWnd);
+	~Graphics() = default;
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 
