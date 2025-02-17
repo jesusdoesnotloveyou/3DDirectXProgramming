@@ -4,7 +4,9 @@
 #include "ScaldException.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "Graphics.h"
 #include <optional>
+#include <memory>
 
 class Window 
 {
@@ -49,6 +51,7 @@ public:
 	void SetTitle(const std::string& title);
 	// almost the same what was in while loop with GetMessage. Check GetMessage and PeekMessage in MSDN to rewind.
 	static std::optional<int> ProcessMessages() noexcept;
+	Graphics& GetGfx();
 
 private:
 	static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
@@ -63,6 +66,9 @@ private:
 	int height;
 	HWND hWnd;
 	static int windowCount;
+	// Graphics
+	// doesn't need to manually delete it cool yeah
+	std::unique_ptr<Graphics> pGfx;
 };
 
 // error exception helper macro

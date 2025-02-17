@@ -131,8 +131,10 @@ Window::Window(int width, int height, const char* name)
 		throw SCALDWND_LAST_EXCEPT();
 	}
 	windowCount++;
-	// show the damn window
-	ShowWindow(hWnd, SW_SHOW);
+	// newly created windows start off as hidden
+	ShowWindow(hWnd, SW_SHOWDEFAULT);
+	// create graphics object
+	pGfx = std::make_unique<Graphics>(hWnd);
 }
 
 Window::~Window()
@@ -170,6 +172,11 @@ std::optional<int> Window::ProcessMessages() noexcept
 	}
 	// return empty optional when not quitting app
 	return {};
+}
+
+Graphics& Window::GetGfx()
+{
+	return *pGfx;
 }
 
 LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
