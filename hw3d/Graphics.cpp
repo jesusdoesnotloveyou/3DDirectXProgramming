@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "Helpers.h"
 
 #pragma comment(lib, "d3d11.lib")
 //#pragma comment(lib, "dxgi.lib")
@@ -45,7 +46,7 @@ Graphics::Graphics(HWND hWnd)
 
 	// gain access to texture subresource in swap chain (back buffer)
 	wrl::ComPtr<ID3D11Resource> pBackBuffer;
-	pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer);
+	ThrowIfFailed(pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer));
 	pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pRtv);
 }
 
