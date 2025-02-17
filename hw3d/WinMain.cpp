@@ -1,6 +1,4 @@
-
 #include "App.h"
-//#include "WindowsMessageMap.h
 
 int CALLBACK WinMain(
 	HINSTANCE hInstance,

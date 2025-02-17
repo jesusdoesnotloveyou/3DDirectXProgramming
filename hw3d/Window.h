@@ -48,7 +48,7 @@ public:
 	Window operator=(const Window&) = delete;
 	void SetTitle(const std::string& title);
 	// almost the same what was in while loop with GetMessage. Check GetMessage and PeekMessage in MSDN to rewind.
-	static std::optional<int> ProcessMessages();
+	static std::optional<int> ProcessMessages() noexcept;
 
 private:
 	static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
