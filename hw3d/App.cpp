@@ -3,7 +3,7 @@
 
 App::App()
     :
-    wnd(640, 480, "window1")
+    wnd(800, 600, "window1")
 {}
 
 int App::Go()
@@ -80,6 +80,7 @@ void App::DoFrame()
 	}*/
 
 	const float c = sin(timer.Peek()) / 2.0f + 0.5f;
+	wnd.GetGfx().DrawTestTriangle();
 	wnd.GetGfx().ClearBuffer(c, c, 1.0f);
 	wnd.GetGfx().EndFrame();
 
