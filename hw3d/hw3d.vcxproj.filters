@@ -45,6 +45,12 @@
     <ClCompile Include="Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dxerr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DxgiInfoManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowsMessageMap.h">
@@ -77,6 +83,12 @@
     <ClInclude Include="Helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dxerr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DxgiInfoManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -89,5 +101,14 @@
   <ItemGroup>
     <None Include="PixelShader.cso" />
     <None Include="VertexShader.cso" />
+    <None Include="DXGetErrorDescription.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="DXGetErrorString.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="DXTrace.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
