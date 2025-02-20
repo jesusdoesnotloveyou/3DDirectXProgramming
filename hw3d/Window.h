@@ -13,15 +13,28 @@ class Window
 public:
 	class Exception : public ScaldException
 	{
+		using ScaldException::ScaldException;
 	public:
-		Exception(int line, const char* file, HRESULT hr) noexcept;
+		static std::string TranslateErrorCode(HRESULT hr) noexcept;
+	};
+
+	class HrException : public Exception
+	{
+	public:
+		HrException(int line, const char* file, HRESULT hr) noexcept;
 		const char* what() const noexcept override;
 		virtual const char* GetType() const noexcept override;
-		static std::string TranslateErrorCode(HRESULT hr) noexcept;
 		HRESULT GetErrorCode() const noexcept;
-		std::string GetErrorString() const noexcept;
+		std::string GetErrorDescription() const noexcept;
 	private:
 		HRESULT hr;
+	};
+
+	class NoGfxException : Exception
+	{
+	public:
+		using Exception::Exception;
+		virtual const char* GetType() const noexcept override;
 	};
 
 private:
@@ -72,5 +85,5 @@ private:
 };
 
 // error exception helper macro
-#define SCALDWND_EXCEPT(hr) Window::Exception(__LINE__, __FILE__, hr)
-#define SCALDWND_LAST_EXCEPT() Window::Exception(__LINE__, __FILE__, GetLastError())
+#define SCALDWND_EXCEPT(hr) Window::HrException(__LINE__, __FILE__, hr)
+#define SCALDWND_LAST_EXCEPT() Window::HrException(__LINE__, __FILE__, GetLastError())
