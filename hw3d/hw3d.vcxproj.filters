@@ -99,8 +99,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PixelShader.cso" />
-    <None Include="VertexShader.cso" />
     <None Include="DXGetErrorDescription.inl">
       <Filter>Header Files</Filter>
     </None>

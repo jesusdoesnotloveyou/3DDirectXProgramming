@@ -129,6 +129,9 @@ void Graphics::DrawTestTriangle()
 
 	D3D11_SUBRESOURCE_DATA sd = {};
 	sd.pSysMem = vertices;
+	sd.SysMemPitch = 0;
+	sd.SysMemSlicePitch = 0;
+
 	GFX_THROW_INFO(pDevice->CreateBuffer(&vertexBufDesc, &sd, &pVertexBuffer));
 
 	const UINT stride = sizeof(Vertex);
