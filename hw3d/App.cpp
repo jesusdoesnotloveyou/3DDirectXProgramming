@@ -80,8 +80,8 @@ void App::DoFrame()
 	}*/
 
 	const float c = sin(timer.Peek()) / 2.0f + 0.5f;
-	wnd.GetGfx().DrawTestTriangle();
 	wnd.GetGfx().ClearBuffer(c, c, 1.0f);
+	wnd.GetGfx().DrawTestTriangle();
 	wnd.GetGfx().EndFrame();
 
 	/*const float t = timer.Peek();
