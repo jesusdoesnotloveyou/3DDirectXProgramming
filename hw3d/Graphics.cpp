@@ -107,19 +107,38 @@ void Graphics::DrawTestTriangle()
 	HRESULT hr;
 
 	struct Vertex {
-		float x;
-		float y;
-		unsigned char r;
-		unsigned char g;
-		unsigned char b;
-		unsigned char a;
+		struct 
+		{
+			float x;
+			float y;
+		} pos;
+		struct {
+			unsigned char r;
+			unsigned char g;
+			unsigned char b;
+			unsigned char a;
+		} color;
 	};
 
-	const Vertex vertices[] = {
+	Vertex vertices[] = {
 		{ 0.0f, 0.5f, 255, 0, 0, 0 },
 		{ 0.5f, -0.5f, 0, 255, 0, 0 },
 		{ -0.5f, -0.5f, 0, 0, 255, 0 },
+
+		{ 0.0f, 0.5f, 255, 0, 0, 0 },
+		{ -0.5f, -0.5f, 0, 0, 255, 0 },
+		{ -0.3f,  0.3f, 0, 255, 0, 0 },
+
+		{ 0.0f, 0.5f, 255, 0, 0, 0 },
+		{ 0.3f, 0.3f, 0, 0, 255, 0 },
+		{ 0.5f, -0.5f, 0, 255, 0, 0 },
+
+		{ 0.0f, -0.8f, 255, 0, 0, 0 },
+		{ -0.5f, -0.5f, 0, 0, 255, 0 },
+		{ 0.5f, -0.5f, 0, 255, 0, 0 },
 	};
+
+	vertices->color.g = 255;
 
 	wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
 	D3D11_BUFFER_DESC vertexBufDesc = {};
@@ -162,7 +181,7 @@ void Graphics::DrawTestTriangle()
 	wrl::ComPtr<ID3D11InputLayout> pInputLayout;
 	const D3D11_INPUT_ELEMENT_DESC ied[] = {
 			{ "POSITION", 0u, DXGI_FORMAT_R32G32_FLOAT/*B32A32_FLOAT*/, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u},
-			{ "COLOR", 0u, DXGI_FORMAT_R8G8B8A8_UINT, 0u, 8u/*D3D11_APPEND_ALIGNED_ELEMENT*/, D3D11_INPUT_PER_VERTEX_DATA, 0u},
+			{ "COLOR", 0u, DXGI_FORMAT_R8G8B8A8_UNORM, 0u, 8u/*D3D11_APPEND_ALIGNED_ELEMENT*/, D3D11_INPUT_PER_VERTEX_DATA, 0u},
 	};
 	
 	GFX_THROW_INFO(pDevice->CreateInputLayout(ied, (UINT)std::size(ied), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pInputLayout));
