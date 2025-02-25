@@ -1,6 +1,8 @@
 #include "Window.h"
 #include <sstream>
 
+#define SCALDWND_NOGFX_EXCEPT() Window::NoGfxException(__LINE__, __FILE__);
+
 int Window::windowCount = 0;
 
 // Window class stuff
@@ -44,18 +46,18 @@ Window::WindowClass::~WindowClass()
 }
 
 // Window Exception stuff
-Window::Exception::Exception(int line, const char* file, HRESULT hr) noexcept
+Window::HrException::HrException(int line, const char* file, HRESULT hr) noexcept
 	:
-	ScaldException(line, file),
+	Exception(line, file),
 	hr(hr)
 {}
 
-const char* Window::Exception::what() const noexcept
+const char* Window::HrException::what() const noexcept
 {
 	std::ostringstream oss;
 	oss << GetType() << "\n"
 		<< "[Error Code] " << GetErrorCode() << "\n"
-		<< "[Description] " << GetErrorString() << "\n"
+		<< "[Description] " << GetErrorDescription() << "\n"
 		<< GetOriginString();
 
 	whatBuffer = oss.str();
@@ -63,7 +65,7 @@ const char* Window::Exception::what() const noexcept
 	return whatBuffer.c_str();
 }
 
-const char* Window::Exception::GetType() const noexcept
+const char* Window::HrException::GetType() const noexcept
 {
 	return "Scald Window Exception";
 }
@@ -86,15 +88,21 @@ std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
  	return errorString;
 }
 
-HRESULT Window::Exception::GetErrorCode() const noexcept
+HRESULT Window::HrException::GetErrorCode() const noexcept
 {
 	return hr;
 }
 
-std::string Window::Exception::GetErrorString() const noexcept
+std::string Window::HrException::GetErrorDescription() const noexcept
 {
 	return TranslateErrorCode(hr);
 }
+
+const char* Window::NoGfxException::GetType() const noexcept
+{
+	return  "Scald Window Exception [No Graphics]";
+}
+
 
 // Window stuff
 Window::Window(int width, int height, const char* name)
@@ -122,7 +130,8 @@ Window::Window(int width, int height, const char* name)
 		WindowClass::GetName(),
 		name,
 		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
-		CW_USEDEFAULT, CW_USEDEFAULT, wr.right - wr.left, wr.bottom - wr.top,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		wr.right - wr.left, wr.bottom - wr.top,
 		nullptr, nullptr, WindowClass::GetInstance(), this
 	);
 	// check for error
@@ -131,8 +140,10 @@ Window::Window(int width, int height, const char* name)
 		throw SCALDWND_LAST_EXCEPT();
 	}
 	windowCount++;
-	// show the damn window
-	ShowWindow(hWnd, SW_SHOW);
+	// newly created windows start off as hidden
+	ShowWindow(hWnd, SW_SHOWDEFAULT);
+	// create graphics object
+	pGfx = std::make_unique<Graphics>(hWnd);
 }
 
 Window::~Window()
@@ -149,9 +160,9 @@ void Window::SetTitle(const std::string& title)
 	}
 }
 
-std::optional<int> Window::ProcessMessages()
+std::optional<int> Window::ProcessMessages() noexcept
 {
-	MSG msg;
+	MSG msg; 
 	// No BOOL because PeekMsg does not return an error code
 	// BOOL gResult;
 	// while there are messages in queue, remove and dispatch them (but do not block on)
@@ -161,7 +172,7 @@ std::optional<int> Window::ProcessMessages()
 		if (msg.message == WM_QUIT)
 		{
 			// return optional wrapping int (arg to PostMessageQuit is in wrapper)
-			return msg.wParam;
+			return (int)msg.wParam;
 		}
 		// TranslateMessage  will post auxilliary WM_CHAR messages from key msgs
 		TranslateMessage(&msg);
@@ -170,6 +181,15 @@ std::optional<int> Window::ProcessMessages()
 	}
 	// return empty optional when not quitting app
 	return {};
+}
+
+Graphics& Window::GetGfx()
+{
+	if (!pGfx)
+	{
+		throw SCALDWND_NOGFX_EXCEPT();
+	}
+	return *pGfx;
 }
 
 LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
