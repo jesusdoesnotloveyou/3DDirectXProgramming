@@ -104,10 +104,11 @@ void Graphics::ClearBuffer(float red, float green, float blue) noexcept
 
 void Graphics::DrawTestTriangle()
 {
+	//ClearBuffer() conditionally executes here (before the drawTestTriangle I mean)
 	HRESULT hr;
 
 	struct Vertex {
-		struct 
+		struct
 		{
 			float x;
 			float y;
@@ -125,17 +126,11 @@ void Graphics::DrawTestTriangle()
 		{ 0.5f, -0.5f, 0, 255, 0, 0 },
 		{ -0.5f, -0.5f, 0, 0, 255, 0 },
 
-		{ 0.0f, 0.5f, 255, 0, 0, 0 },
-		{ -0.5f, -0.5f, 0, 0, 255, 0 },
 		{ -0.3f,  0.3f, 0, 255, 0, 0 },
 
-		{ 0.0f, 0.5f, 255, 0, 0, 0 },
 		{ 0.3f, 0.3f, 0, 0, 255, 0 },
-		{ 0.5f, -0.5f, 0, 255, 0, 0 },
 
 		{ 0.0f, -0.8f, 255, 0, 0, 0 },
-		{ -0.5f, -0.5f, 0, 0, 255, 0 },
-		{ 0.5f, -0.5f, 0, 255, 0, 0 },
 	};
 
 	vertices->color.g = 255;
@@ -149,16 +144,44 @@ void Graphics::DrawTestTriangle()
 	vertexBufDesc.ByteWidth = sizeof(vertices);
 	vertexBufDesc.StructureByteStride = sizeof(Vertex);
 
-	D3D11_SUBRESOURCE_DATA sd = {};
-	sd.pSysMem = vertices;
-	sd.SysMemPitch = 0;
-	sd.SysMemSlicePitch = 0;
+	D3D11_SUBRESOURCE_DATA vsd = {};
+	vsd.pSysMem = vertices;
+	vsd.SysMemPitch = 0u;
+	vsd.SysMemSlicePitch = 0u;
 
-	GFX_THROW_INFO(pDevice->CreateBuffer(&vertexBufDesc, &sd, &pVertexBuffer));
+	GFX_THROW_INFO(pDevice->CreateBuffer(&vertexBufDesc, &vsd, &pVertexBuffer));
 
 	const UINT stride = sizeof(Vertex);
 	const UINT offset = 0u;
 	pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+
+	// create index buffer
+	const unsigned short indices[] =
+	{
+		0, 1, 2,
+		0, 2, 3,
+		0, 4, 1,
+		2, 1, 5
+	};
+	wrl::ComPtr<ID3D11Buffer> pIndexBuffer;
+	D3D11_BUFFER_DESC indexBufDesc = {};
+
+	indexBufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufDesc.CPUAccessFlags = 0u;
+	indexBufDesc.MiscFlags = 0u;
+	indexBufDesc.ByteWidth = sizeof(indices);
+	indexBufDesc.StructureByteStride = sizeof(unsigned short);
+
+	D3D11_SUBRESOURCE_DATA isd = {};
+	isd.pSysMem = indices;
+	isd.SysMemPitch = 0u;
+	isd.SysMemSlicePitch = 0u;
+
+	GFX_THROW_INFO(pDevice->CreateBuffer(&indexBufDesc, &isd, &pIndexBuffer));
+
+	// bind index buffer
+	pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
 
 	// create pixel shader
 	wrl::ComPtr<ID3D11PixelShader> pPixelShader;
@@ -206,7 +229,10 @@ void Graphics::DrawTestTriangle()
 	
 	pContext->RSSetViewports(1u, &vp);
 
-	GFX_THROW_INFO_ONLY(pContext->Draw((UINT)std::size(vertices), 0u));
+	//GFX_THROW_INFO_ONLY(pContext->Draw((UINT)std::size(vertices), 0u));
+	GFX_THROW_INFO_ONLY(pContext->DrawIndexed((UINT)std::size(indices), 0u, 0u));
+	
+	// pSwapChain->Present() conditionally executes here (I mean after drawTestTriangle
 }
 
 Graphics::HrException::HrException(int line, const char* file, HRESULT hr, std::vector<std::string> infoMsgs) noexcept

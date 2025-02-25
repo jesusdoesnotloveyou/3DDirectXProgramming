@@ -162,7 +162,7 @@ void Window::SetTitle(const std::string& title)
 
 std::optional<int> Window::ProcessMessages() noexcept
 {
-	MSG msg;
+	MSG msg; 
 	// No BOOL because PeekMsg does not return an error code
 	// BOOL gResult;
 	// while there are messages in queue, remove and dispatch them (but do not block on)
