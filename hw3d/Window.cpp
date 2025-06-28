@@ -116,7 +116,7 @@ Window::Window(int width, int height, const char* name)
 	wr.right = wr.left + width;
 	wr.top = 100;
 	wr.bottom = wr.top + height;
-	if (AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
+	if (AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE) == 0)
 	{
 		throw SCALDWND_LAST_EXCEPT();
 	}
@@ -252,10 +252,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_MOUSEMOVE:
 	{
 		const POINTS pt = MAKEPOINTS(lParam);
-		// or
-		// xPos = GET_X_LPARAM(lParam); 
-		// yPos = GET_Y_LPARAM(lParam);
-
+		// or xPos = GET_X_LPARAM(lParam); yPos = GET_Y_LPARAM(lParam);
 		// in client region -> log move, log enter + capture mouse
 		if (pt.x > 0 && pt.x < width && pt.y > 0 && pt.y < height)
 		{
