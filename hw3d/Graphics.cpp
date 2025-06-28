@@ -186,12 +186,30 @@ void Graphics::DrawTestTriangle()
 	// create pixel shader
 	wrl::ComPtr<ID3D11PixelShader> pPixelShader;
 	wrl::ComPtr<ID3DBlob> pBlob;
-	GFX_THROW_INFO(D3DReadFileToBlob(L"PixelShader.cso", &pBlob));
+	//GFX_THROW_INFO(D3DReadFileToBlob(L"../x64/Debug/PixelShader.cso", &pBlob));
+	GFX_THROW_INFO(D3DCompileFromFile(L"./PixelShader.hlsl",
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"main",
+		"ps_5_0" /*pixel shader*/,
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0u,
+		&pBlob,
+		nullptr));
 	GFX_THROW_INFO(pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
-	// create vertex shader 
+	// create vertex shader
 
 	wrl::ComPtr<ID3D11VertexShader> pVertexShader;
-	GFX_THROW_INFO(D3DReadFileToBlob(L"VertexShader.cso", &pBlob));
+	//GFX_THROW_INFO(D3DReadFileToBlob(L"../x64/Debug/VertexShader.cso", &pBlob));
+	GFX_THROW_INFO(D3DCompileFromFile(L"./VertexShader.hlsl",
+		nullptr /*macros*/,
+		nullptr /*include*/,
+		"main",
+		"vs_5_0" /*pixel shader*/,
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+		0u,
+		&pBlob,
+		nullptr));
 	GFX_THROW_INFO(pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
 	
 	// bind vertex shader
